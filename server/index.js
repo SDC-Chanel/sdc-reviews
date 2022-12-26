@@ -11,6 +11,7 @@ app.use(express.json());
 router.use(cors());
 app.use(morgan('dev'));
 app.use(router);
+app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => { console.log(`Now listening on http://localhost:${PORT}`); });
