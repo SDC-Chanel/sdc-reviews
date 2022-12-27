@@ -10,8 +10,34 @@ module.exports = {
         console.log('error in controllers getReviews ', err);
         res.status(404).send(err);
       } else {
-        console.log('success in controllers getReviews ', results);
-        res.status(200).send();
+        console.log('success in controllers getReviews', results);
+        const data = {
+          product: req.params.product_id,
+          page: 0,
+          count: results.length,
+          results: results.map((review, index) => {
+            return {
+              review_id: review.review_id,
+              rating: review.rating,
+              summary: review.summary,
+              recommend: review.recommend,
+              response: review.response, // coming in as a string
+              body: review.body,
+              date: new Date(review.date), // coming in as null
+              reviewer_name: review.reviewer_name,
+              helpfulness: review.helpfulness,
+              photos: [
+                {
+                  id: review.photo_id,
+                  url: review.url,
+                },
+              ],
+            };
+          }),
+          // results,
+        };
+
+        res.status(200).send(data);
       }
     }, req.params);
   },
@@ -23,7 +49,7 @@ module.exports = {
         res.status(404).send(err);
       } else {
         console.log('success in controllers getMeta ', results);
-        res.status(200).send();
+        res.status(200).send(results);
       }
     }, req.params);
   },

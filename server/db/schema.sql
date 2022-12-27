@@ -56,6 +56,15 @@ FROM '/Users/madelineking/hack-reactor/rfp2210/rfp2210-sdc/reviews-csv-files/cha
 DELIMITER ','
 CSV HEADER;
 
+-- id,product_id,name
+-- 1,1,"Fit"
+-- 2,1,"Length"
+-- 3,1,"Comfort"
+-- 4,1,"Quality"
+-- 5,2,"Quality"
+-- 6,3,"Fit"
+-- 7,3,"Length"
+
 -- characteristic_reviews csv
 -- id,characteristic_id,review_id,value
 CREATE TABLE characteristic_reviews (
@@ -72,3 +81,9 @@ COPY characteristic_reviews
 FROM '/Users/madelineking/hack-reactor/rfp2210/rfp2210-sdc/reviews-csv-files/characteristic_reviews.csv'
 DELIMITER ','
 CSV HEADER;
+
+-- id,characteristic_id,review_id,value
+-- 1,1,1,4
+-- 2,2,1,3
+-- 3,3,1,5
+-- 4,4,1,4
