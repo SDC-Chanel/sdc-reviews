@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS characteristic_reviews CASCADE;
 -- CREATE reviews csv
 -- id,product_id,rating,date,summary,body,recommend,reported,reviewer_name,reviewer_email,response,helpfulness
 CREATE TABLE reviews (
-  review_id SERIAL PRIMARY KEY,
+  id INT PRIMARY KEY,
   product_id SERIAL,
   rating INT,
   date BIGINT,
@@ -30,10 +30,10 @@ CSV HEADER;
 -- reviews_photos csv
 -- id,review_id,url
 CREATE TABLE reviews_photos (
-  photo_id SERIAL PRIMARY KEY,
+  id INT PRIMARY KEY,
   review_id SERIAL,
   url TEXT,
-  FOREIGN KEY (review_id) REFERENCES reviews(review_id)
+  FOREIGN KEY (review_id) REFERENCES reviews(id)
 );
 
 -- LOAD reviews_photos csv
@@ -45,7 +45,7 @@ CSV HEADER;
 -- characteristics csv
 -- id,product_id,name
 CREATE TABLE characteristics (
-  characteristic_id SERIAL PRIMARY KEY,
+  id INT PRIMARY KEY,
   product_id SERIAL,
   name TEXT
 );
@@ -68,12 +68,12 @@ CSV HEADER;
 -- characteristic_reviews csv
 -- id,characteristic_id,review_id,value
 CREATE TABLE characteristic_reviews (
-  characteristic_reviews_id SERIAL PRIMARY KEY,
+  id INT PRIMARY KEY,
   characteristic_id SERIAL,
   review_id SERIAL,
   value INT,
-  FOREIGN KEY (characteristic_id) REFERENCES characteristics(characteristic_id),
-  FOREIGN KEY (review_id) REFERENCES reviews(review_id)
+  FOREIGN KEY (characteristic_id) REFERENCES characteristics(id),
+  FOREIGN KEY (review_id) REFERENCES reviews(id)
 );
 
 -- LOAD characteristic_reviews csv
