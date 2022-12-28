@@ -26,20 +26,13 @@ module.exports = {
               date: new Date(+reviewObj.reviews.date),
               reviewer_name: reviewObj.reviews.reviewer_name,
               helpfulness: reviewObj.reviews.helpfulness,
-              // photos: [
-              //   {
-              //     id: review.photo_id,
-              //     url: review.url,
-              //   },
-              // ],
               photos: reviewObj.photos,
             };
           }),
-          // results,
         };
         res.status(200).send(data);
       }
-    }, req.params);
+    }, req.params); // if reported is true, don't return
   },
   getMeta: (req, res) => {
     console.log('check params', req.params);
@@ -82,7 +75,7 @@ module.exports = {
         res.status(404).send(err);
       } else {
         console.log('success in controllers updateReview ', results);
-        res.status(204).send(results);
+        res.status(204).send();
       }
     }, req.params);
   },
@@ -94,7 +87,7 @@ module.exports = {
         res.status(404).send(err);
       } else {
         console.log('success in controllers reportReview ', results);
-        res.status(204).send(results);
+        res.status(204).send();
       }
     }, req.params);
   },
