@@ -3,10 +3,10 @@ const db = require('../db/db');
 module.exports = {
   getReviews: (callback, id) => {
     const count = id.count || 5;
+    const offset = id.page || 0;
     console.log('inside models getReviews');
-    const query1 = `SELECT * FROM reviews WHERE product_id = ${id.product_id} AND reported = false LIMIT ${count}`;
+    const query1 = `SELECT * FROM reviews WHERE product_id = ${id.product_id} AND reported = false LIMIT ${count} OFFSET ${offset}`;
     const jordan = `SELECT * FROM reviews_photos WHERE review_id IN (SELECT id FROM reviews WHERE product_id = ${id.product_id})`;
-
     db.query(query1, (err1, results1) => {
       db.query(jordan, (err2, results2) => {
         const test = results1.rows.reduce((acc, review) => {
@@ -31,17 +31,17 @@ module.exports = {
   getMeta: (callback, id) => {
     // const count = id.count || 5;
     console.log('inside models getMeta');
-    const query = `SELECT * FROM characteristics WHERE product_id = ${id.product_id} LIMIT 10`;
+    const query = `SELECT count(*) FILTER (WHERE product_id = ${id.product_id} AND recommend) FROM reviews`;
     db.query(query, (err, results) => {
-      callback(err, results);
+      callback(err, results.rows);
     });
   },
-  postReview: (callback, id) => {
-    console.log('inside models postReview');
-    const query = `INSERT * FROM reviews WHERE product_id = ${id.product_id}`;
-    db.query(query, (err, results) => {
-      callback(err, results);
-    });
+  postReview: (callback, newReview) => {
+    console.log('inside models postReview', newReview);
+    const query1 = `INSERT INTO reviews(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness)VALUES (${newReview.product_id}, ${newReview.rating}, ${newReview.date}, ${newReview.summary}, ${newReview.body}, ${newReview.recommend}, ${newReview.reported}, ${newReview.reviewer_name}, ${newReview.reviewer_email}, ${newReview.response}, ${newReview.helpfulness})`;
+    // db.query(query, (err, results) => {
+    //   callback(err, results);
+    // });
   },
   updateReview: (callback, id) => {
     console.log('inside models updateReview', id);

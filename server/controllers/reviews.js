@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const {
   getReviews, getMeta, postReview, updateReview, reportReview,
 } = require('../models/reviews');
@@ -47,16 +48,37 @@ module.exports = {
     }, req.params);
   },
   postReview: (req, res) => {
-    console.log('check params', req.body);
-    // const { body } = req;
+    // console.log('check params', req.body);
+    // coming in as 9 columns, reviews is 12 columns (7 + new id)
+    // photos [] goes into reviews_photos
+    // characteristics obj is split between two tables (potential UNION insert)
+    // 1-5
+
+    const { body } = req;
     // check if all fields exist otherwise dont add it to database
     // add fields if formatting is correct
     // pass it into models
-    req.body.response = null;
-    req.body.date = new Date(/* current timestamp */);
-    req.body.reported = false;
-    req.body.helpfulness = 0;
+    const newReview = {
+      // id: 0,
+      product_id: body.product_id,
+      rating: body.rating > 0 && body.rating <= 5 ? body.rating : null,
+      summary: body.summary || '',
+      body: body.body.length && body.body.length <= 1000 ? body.body : null,
+      recommend: typeof body.recommend === 'boolean' ? body.recommend : null,
+      reviewer_name: body.reviewer_name.length && body.reviewer_name.length <= 60 ? body.reviewer_name : null,
+      reviewer_email: body.reviewer_email.length && body.reviewer_email.length <= 60 ? body.reviewer_email : null,
+    };
 
+    if (Object.values(newReview).indexOf(null) !== -1) {
+      res.status(404).send();
+    } else {
+      newReview.response = null; // reviews
+      newReview.date = Math.floor(new Date().getTime() / 1000); // reviews
+      newReview.reported = false; // reviews
+      newReview.helpfulness = 0; // reviews
+      newReview.photos = body.photos;
+      newReview.characteristics = body.characteristics;
+    }
     postReview((err, results) => {
       if (err) {
         console.log('error in controllers postReview ', err);
@@ -65,7 +87,7 @@ module.exports = {
         console.log('success in controllers postReview ', results);
         res.status(201).send();
       }
-    }, req.body); // all except response/date (assign a date in the backend?)
+    }, newReview);
   },
   updateReview: (req, res) => {
     console.log('check params', req.params); // review id
