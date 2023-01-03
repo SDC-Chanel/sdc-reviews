@@ -2,7 +2,7 @@ const db = require('../db/db');
 
 module.exports = {
   getReviews: (callback, id) => {
-    const count = id.count || 20;
+    const count = id.count || 5;
     const offset = id.page || 0;
     console.log('inside models getReviews');
     const query1 = `SELECT * FROM reviews WHERE product_id = ${id.product_id} AND reported = false LIMIT ${count} OFFSET ${offset}`;
@@ -65,7 +65,6 @@ module.exports = {
             metaObj.recommended.false = total - res.rows[0].count;
             db.query(`SELECT id, name FROM characteristics WHERE product_id = ${id.product_id}`)
               .then(res => { // get characteristic id and name
-                console.log('im tired', res.rows);
                 Promise.all(res.rows.map(char => {
                   return db.query(`SELECT value FROM characteristic_reviews WHERE characteristic_id = ${char.id}`) // for each characteristic, get values
                     .then(res => {
@@ -105,7 +104,7 @@ module.exports = {
               const keys = Object.keys(newReview.characteristics);
 
               keys.forEach(name => {
-                console.log('i want to cry', newReview.characteristics[name].value); // num values
+                console.log('num values', newReview.characteristics[name].value);
                 db.query(`INSERT INTO characteristic_reviews(characteristic_id, review_id, value) VALUES ((SELECT id FROM characteristics WHERE product_id = ${newReview.product_id} AND name = '${name}'), (SELECT id FROM reviews WHERE date = ${newReview.date}), ${newReview.characteristics[name].value})`)
                   .then(res3 => {
                     console.log('successfully inserted characteristic_review into db');

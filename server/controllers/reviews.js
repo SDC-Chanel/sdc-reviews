@@ -49,7 +49,7 @@ module.exports = {
   },
   postReview: (req, res) => {
     // console.log('check params', req.body);
-
+    // fix date bug
     const { body } = req;
     // check if all fields exist otherwise dont add it to database
     // add fields if formatting is correct
