@@ -49,17 +49,12 @@ module.exports = {
   },
   postReview: (req, res) => {
     // console.log('check params', req.body);
-    // coming in as 9 columns, reviews is 12 columns (7 + new id)
-    // photos [] goes into reviews_photos
-    // characteristics obj is split between two tables (potential UNION insert)
-    // 1-5
 
     const { body } = req;
     // check if all fields exist otherwise dont add it to database
     // add fields if formatting is correct
     // pass it into models
     const newReview = {
-      // id: 0,
       product_id: body.product_id,
       rating: body.rating > 0 && body.rating <= 5 ? body.rating : null,
       summary: body.summary || '',
