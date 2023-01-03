@@ -15,6 +15,9 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
+  plugins: [
+    'jest',
+  ],
   rules: {
     indent: [2, 2],
     'no-console': 0,
