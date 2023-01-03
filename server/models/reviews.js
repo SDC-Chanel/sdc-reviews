@@ -2,7 +2,7 @@ const db = require('../db/db');
 
 module.exports = {
   getReviews: (callback, id) => {
-    const count = id.count || 5;
+    const count = id.count || 20;
     const offset = id.page || 0;
     console.log('inside models getReviews');
     const query1 = `SELECT * FROM reviews WHERE product_id = ${id.product_id} AND reported = false LIMIT ${count} OFFSET ${offset}`;
@@ -38,7 +38,34 @@ module.exports = {
   },
   postReview: (callback, newReview) => {
     console.log('inside models postReview', newReview);
-    const query1 = `INSERT INTO reviews(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness)VALUES (${newReview.product_id}, ${newReview.rating}, ${newReview.date}, ${newReview.summary}, ${newReview.body}, ${newReview.recommend}, ${newReview.reported}, ${newReview.reviewer_name}, ${newReview.reviewer_email}, ${newReview.response}, ${newReview.helpfulness})`;
+    // cmd to reset serial id -- SELECT setval(pg_get_serial_sequence('reviews', 'id'), (SELECT MAX(id) FROM reviews)+1);
+    db.query(`INSERT INTO reviews(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES (${newReview.product_id}, ${newReview.rating}, ${newReview.date}, '${newReview.summary.replaceAll("'", "''")}', '${newReview.body.replaceAll("'", "''")}', ${newReview.recommend}, ${newReview.reported}, '${newReview.reviewer_name.replaceAll("'", "''")}', '${newReview.reviewer_email.replaceAll("'", "''")}', '${newReview.response}', ${newReview.helpfulness})`)
+      .then(res1 => {
+        console.log('successfully inserted reviews into db ', res1);
+        db.query(`INSERT INTO reviews_photos(review_id, url) VALUES ((SELECT id FROM reviews WHERE date = ${newReview.date}), '${newReview.photos}')`)
+          .then(res2 => {
+            console.log('successfully inserted photos into db ', res2);
+            const keys = Object.keys(newReview.characteristics);
+
+            keys.forEach(name => {
+              console.log('i want to cry', newReview.characteristics[name].value); // num values
+              db.query(`INSERT INTO characteristic_reviews(characteristic_id, review_id, value) VALUES ((SELECT id FROM characteristics WHERE product_id = ${newReview.product_id} AND name = '${name}'), (SELECT id FROM reviews WHERE date = ${newReview.date}), ${newReview.characteristics[name].value})`)
+                .then(res3 => {
+                  console.log('successfully inserted characteristic_review into db');
+                })
+                .catch(err => {
+                  console.log('failed to insert characteristic_review into db');
+                });
+            });
+          });
+      })
+      .catch(err => {
+        console.log('failed to insert photos into db ', err);
+      })
+      .catch(err => {
+        console.log('failed to insert reviews into db ', err);
+      });
+
     // db.query(query, (err, results) => {
     //   callback(err, results);
     // });
@@ -58,3 +85,9 @@ module.exports = {
     });
   },
 };
+
+
+// db.query('SELECT COUNT(*) FROM characteristics UNION SELECT COUNT(*) FROM characteristic_reviews', (err, results) => {
+//   callback(err, results);
+// });
+//   rows: [ { count: '3347679' }, { count: '19327575' } ]
