@@ -42,28 +42,41 @@ module.exports = {
     db.query(`INSERT INTO reviews(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES (${newReview.product_id}, ${newReview.rating}, ${newReview.date}, '${newReview.summary.replaceAll("'", "''")}', '${newReview.body.replaceAll("'", "''")}', ${newReview.recommend}, ${newReview.reported}, '${newReview.reviewer_name.replaceAll("'", "''")}', '${newReview.reviewer_email.replaceAll("'", "''")}', '${newReview.response}', ${newReview.helpfulness})`)
       .then(res1 => {
         console.log('successfully inserted reviews into db ', res1);
-        db.query(`INSERT INTO reviews_photos(review_id, url) VALUES ((SELECT id FROM reviews WHERE date = ${newReview.date}), '${newReview.photos}')`)
-          .then(res2 => {
-            console.log('successfully inserted photos into db ', res2);
-            const keys = Object.keys(newReview.characteristics);
+        // iterate over newReviews.photos, insert each photo url **FIX FIX FIX FIX FIX FIX
+        newReview.photos.forEach(photo => {
+          db.query(`INSERT INTO reviews_photos(review_id, url) VALUES ((SELECT id FROM reviews WHERE date = ${newReview.date}), '${photo}')`)
+            .then(res0 => {
+              console.log('photo has been successfully inserted');
+            })
+            .then(res2 => {
+              console.log('successfully inserted photos into db ', res2);
+              const keys = Object.keys(newReview.characteristics);
 
-            keys.forEach(name => {
-              console.log('i want to cry', newReview.characteristics[name].value); // num values
-              db.query(`INSERT INTO characteristic_reviews(characteristic_id, review_id, value) VALUES ((SELECT id FROM characteristics WHERE product_id = ${newReview.product_id} AND name = '${name}'), (SELECT id FROM reviews WHERE date = ${newReview.date}), ${newReview.characteristics[name].value})`)
-                .then(res3 => {
-                  console.log('successfully inserted characteristic_review into db');
-                })
-                .catch(err => {
-                  console.log('failed to insert characteristic_review into db');
-                });
+              keys.forEach(name => {
+                console.log('i want to cry', newReview.characteristics[name].value); // num values
+                db.query(`INSERT INTO characteristic_reviews(characteristic_id, review_id, value) VALUES ((SELECT id FROM characteristics WHERE product_id = ${newReview.product_id} AND name = '${name}'), (SELECT id FROM reviews WHERE date = ${newReview.date}), ${newReview.characteristics[name].value})`)
+                  .then(res3 => {
+                    console.log('successfully inserted characteristic_review into db');
+                  })
+                  .catch(err => {
+                    console.log('failed to insert characteristic_review into db');
+                  });
+              });
+            })
+            .catch(err => {
+              console.log('error inserting photo');
             });
-          });
+        });
       })
-      .catch(err => {
-        console.log('failed to insert photos into db ', err);
+      .then((err, results) => {
+        callback(err, results);
       })
+      // .catch(err => {
+      //   console.log('failed to insert photos into db ', err);
+      // })
       .catch(err => {
         console.log('failed to insert reviews into db ', err);
+        callback(err);
       });
 
     // db.query(query, (err, results) => {
