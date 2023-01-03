@@ -1,8 +1,8 @@
 -- CREATE DATABASE
-DROP TABLE IF EXISTS reviews CASCADE;
-DROP TABLE IF EXISTS reviews_photos CASCADE;
-DROP TABLE IF EXISTS characteristics CASCADE;
-DROP TABLE IF EXISTS characteristic_reviews CASCADE;
+-- DROP TABLE IF EXISTS reviews CASCADE;
+-- DROP TABLE IF EXISTS reviews_photos CASCADE;
+-- DROP TABLE IF EXISTS characteristics CASCADE;
+-- DROP TABLE IF EXISTS characteristic_reviews CASCADE;
 
 -- CREATE reviews csv
 -- id,product_id,rating,date,summary,body,recommend,reported,reviewer_name,reviewer_email,response,helpfulness
@@ -87,3 +87,11 @@ CSV HEADER;
 -- 2,2,1,3
 -- 3,3,1,5
 -- 4,4,1,4
+
+CREATE INDEX product_index ON reviews (product_id);
+CREATE INDEX recommend_index ON reviews (recommend);
+CREATE INDEX rating_index ON reviews (rating);
+CREATE INDEX reviews_foreign_index ON reviews_photos (review_id);
+CREATE INDEX characteristics_product_index ON characteristics (product_id);
+CREATE INDEX name_index ON characteristics (name);
+CREATE INDEX characteristic_foreign_index ON characteristic_reviews (characteristic_id);

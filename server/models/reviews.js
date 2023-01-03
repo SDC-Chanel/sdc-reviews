@@ -59,12 +59,14 @@ module.exports = {
           return acc;
         }, 0);
         console.log('total ', total);
-        db.query(`SELECT count(*) FILTER (WHERE product_id = ${id.product_id} AND recommend) FROM reviews`)
+        db.query(`SELECT recommend FROM reviews WHERE product_id = ${id.product_id} AND recommend = true`)
           .then(res => {
-            metaObj.recommended.true = res.rows[0].count;
-            metaObj.recommended.false = total - res.rows[0].count;
+            metaObj.recommended.true = res.rows.length;
+            metaObj.recommended.false = total - res.rows.length;
+            console.log('test first query hangup');
             db.query(`SELECT id, name FROM characteristics WHERE product_id = ${id.product_id}`)
               .then(res => { // get characteristic id and name
+                console.log('test SECOND query hangup');
                 Promise.all(res.rows.map(char => {
                   return db.query(`SELECT value FROM characteristic_reviews WHERE characteristic_id = ${char.id}`) // for each characteristic, get values
                     .then(res => {
