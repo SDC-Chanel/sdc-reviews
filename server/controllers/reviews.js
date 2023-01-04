@@ -5,13 +5,12 @@ const {
 
 module.exports = {
   getReviews: (req, res) => {
-    // console.log('check params', req.params);
     getReviews((err, results) => {
       if (err) {
-        // console.log('error in controllers getReviews ', err);
+        console.log('error in controllers getReviews ', err);
         res.status(404).send(err);
       } else {
-        // console.log('success in controllers getReviews', results);
+        console.log('success in controllers getReviews', results);
         const data = {
           product: req.params.product_id,
           page: 0,
@@ -33,16 +32,13 @@ module.exports = {
         };
         res.status(200).send(data);
       }
-    }, req.params); // if reported is true, don't return
+    }, req.params);
   },
   getMeta: (req, res) => {
-    // console.log('check params', req.params);
     getMeta((err, results) => {
       if (err) {
-        // console.log('error in controllers getMeta ', err);
         res.status(404).send(err);
       } else {
-        // console.log('success in controllers getMeta ', results);
         res.status(200).send(results);
       }
     }, req.params);
@@ -51,9 +47,6 @@ module.exports = {
     console.log('check params', req.body);
     // fix date bug
     const { body } = req;
-    // check if all fields exist otherwise dont add it to database
-    // add fields if formatting is correct
-    // pass it into models
     const newReview = {
       product_id: body.product_id,
       rating: body.rating > 0 && body.rating <= 5 ? body.rating : null,
@@ -67,43 +60,35 @@ module.exports = {
     if (Object.values(newReview).indexOf(null) !== -1) {
       res.status(404).send();
     } else {
-      newReview.response = null; // reviews
-      newReview.date = Math.floor(new Date().getTime() / 1000); // reviews
-      newReview.reported = false; // reviews
-      newReview.helpfulness = 0; // reviews
+      newReview.response = null;
+      newReview.date = Date.now();
+      newReview.reported = false;
+      newReview.helpfulness = 0;
       newReview.photos = body.photos;
       newReview.characteristics = body.characteristics;
     }
     postReview((err, results) => {
       if (err) {
-        // console.log('error in controllers postReview ', err);
         res.status(404).send(err);
       } else {
-        // console.log('success in controllers postReview ', results);
         res.status(201).send();
       }
     }, newReview);
   },
   updateReview: (req, res) => {
-    // console.log('check params', req.params); // review id
     updateReview((err, results) => {
       if (err) {
-        // console.log('error in controllers updateReview ', err);
         res.status(404).send(err);
       } else {
-        // console.log('success in controllers updateReview ', results);
         res.status(204).send();
       }
     }, req.params);
   },
   reportReview: (req, res) => {
-    // console.log('check params', req.params); // review id
     reportReview((err, results) => {
       if (err) {
-        // console.log('error in controllers reportReview ', err);
         res.status(404).send(err);
       } else {
-        // console.log('success in controllers reportReview ', results);
         res.status(204).send();
       }
     }, req.params);

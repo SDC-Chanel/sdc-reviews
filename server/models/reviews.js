@@ -1,14 +1,13 @@
+/* eslint-disable no-shadow */
 const db = require('../db/db');
 
 module.exports = {
   getReviews: (callback, id) => {
     const count = id.count || 5;
     const offset = id.page || 0;
-    // console.log('inside models getReviews');
-    const query1 = `SELECT * FROM reviews WHERE product_id = ${id.product_id} AND reported = false LIMIT ${count} OFFSET ${offset}`;
-    const jordan = `SELECT * FROM reviews_photos WHERE review_id IN (SELECT id FROM reviews WHERE product_id = ${id.product_id})`;
-    db.query(query1, (err1, results1) => {
-      db.query(jordan, (err2, results2) => {
+
+    db.query(`SELECT * FROM reviews WHERE product_id = ${id.product_id} AND reported = false LIMIT ${count} OFFSET ${offset}`, (err1, results1) => {
+      db.query(`SELECT * FROM reviews_photos WHERE review_id IN (SELECT id FROM reviews WHERE product_id = ${id.product_id})`, (err2, results2) => {
         const test = results1.rows.reduce((acc, review) => {
           const update = {};
           update.reviews = review;
@@ -29,7 +28,6 @@ module.exports = {
     });
   },
   getMeta: (callback, id) => {
-    // console.log('inside models getMeta', id);
     const query = `SELECT count(*) FILTER (WHERE product_id = ${id.product_id} AND recommend) FROM reviews`;
 
     const metaObj = {};
@@ -58,19 +56,15 @@ module.exports = {
           acc += Number(value);
           return acc;
         }, 0);
-        // console.log('total ', total);
         db.query(`SELECT recommend FROM reviews WHERE product_id = ${id.product_id} AND recommend = true`)
           .then(res => {
             metaObj.recommended.true = res.rows.length;
             metaObj.recommended.false = total - res.rows.length;
-            // console.log('test first query hangup');
             db.query(`SELECT id, name FROM characteristics WHERE product_id = ${id.product_id}`)
-              .then(res => { // get characteristic id and name
-                // console.log('test SECOND query hangup');
+              .then(res => {
                 Promise.all(res.rows.map(char => {
-                  return db.query(`SELECT value FROM characteristic_reviews WHERE characteristic_id = ${char.id}`) // for each characteristic, get values
+                  return db.query(`SELECT value FROM characteristic_reviews WHERE characteristic_id = ${char.id}`)
                     .then(res => {
-                      // console.log('inner inner loop values?', res.rows); // values for each characteristic!!!!!
                       const average = res.rows.reduce((acc, value) => {
                         acc += value.value;
                         return acc;
@@ -92,32 +86,21 @@ module.exports = {
       });
   },
   postReview: (callback, newReview) => {
-    // console.log('inside models postReview', newReview);
     db.query(`INSERT INTO reviews(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES (${newReview.product_id}, ${newReview.rating}, ${newReview.date}, '${newReview.summary.replaceAll("'", "''")}', '${newReview.body.replaceAll("'", "''")}', ${newReview.recommend}, ${newReview.reported}, '${newReview.reviewer_name.replaceAll("'", "''")}', '${newReview.reviewer_email.replaceAll("'", "''")}', '${newReview.response}', ${newReview.helpfulness})`)
       .then(res1 => {
-        // console.log('successfully inserted reviews into db ', res1);
         newReview.photos.forEach(photo => {
           db.query(`INSERT INTO reviews_photos(review_id, url) VALUES ((SELECT id FROM reviews WHERE date = ${newReview.date}), '${photo}')`)
             .then(res0 => {
-              // console.log('photo has been successfully inserted');
             })
             .then(res2 => {
-              // console.log('successfully inserted photos into db ', res2);
               const keys = Object.keys(newReview.characteristics);
 
               keys.forEach(name => {
-                // console.log('num values', newReview.characteristics[name].value);
-                db.query(`INSERT INTO characteristic_reviews(characteristic_id, review_id, value) VALUES ((SELECT id FROM characteristics WHERE product_id = ${newReview.product_id} AND name = '${name}'), (SELECT id FROM reviews WHERE date = ${newReview.date}), ${newReview.characteristics[name].value})`)
-                  .then(res3 => {
-                    // console.log('successfully inserted characteristic_review into db');
-                  })
-                  .catch(err => {
-                    // console.log('failed to insert characteristic_review into db');
-                  });
+                db.query(`INSERT INTO characteristic_reviews(characteristic_id, review_id, value) VALUES ((SELECT id FROM characteristics WHERE product_id = ${newReview.product_id} AND name = '${name}'), (SELECT id FROM reviews WHERE date = ${newReview.date}), ${newReview.characteristics[name].value})`);
               });
             })
             .catch(err => {
-              // console.log('error inserting photo');
+              callback(err);
             });
         });
       })
@@ -125,19 +108,16 @@ module.exports = {
         callback(err, results);
       })
       .catch(err => {
-        // console.log('failed to insert reviews into db ', err);
         callback(err);
       });
   },
   updateReview: (callback, id) => {
-    // console.log('inside models updateReview', id);
     const query = `UPDATE reviews SET helpfulness = helpfulness+1 WHERE id = ${id.review_id}`;
     db.query(query, (err, results) => {
       callback(err, results);
     });
   },
   reportReview: (callback, id) => {
-    // console.log('inside models reportReview');
     const query = `UPDATE reviews SET reported = true WHERE id = ${id.review_id}`;
     db.query(query, (err, results) => {
       callback(err, results.rows);
@@ -146,9 +126,5 @@ module.exports = {
 };
 
 
-// db.query('SELECT COUNT(*) FROM characteristics UNION SELECT COUNT(*) FROM characteristic_reviews', (err, results) => {
-//   callback(err, results);
-// });
-//   rows: [ { count: '3347679' }, { count: '19327575' } ]
-
-// cmd to reset serial id -- SELECT setval(pg_get_serial_sequence('reviews', 'id'), (SELECT MAX(id) FROM reviews)+1);
+// SELECT COUNT(*) FROM characteristics UNION SELECT COUNT(*) FROM characteristic_reviews'
+// rows: [ { count: '3347679' }, { count: '19327575' } ]
