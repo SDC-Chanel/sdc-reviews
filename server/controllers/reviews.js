@@ -48,53 +48,33 @@ module.exports = {
   },
   postReview: (req, res) => {
     const { body } = req;
-    // const newReview = {
-    //   product_id: body.product_id,
-    //   rating: body.rating > 0 && body.rating <= 5 ? body.rating : null,
-    //   summary: body.summary || '',
-    //   body: body.body.length && body.body.length <= 1000 ? body.body : null,
-    //   recommend: typeof body.recommend === 'boolean' ? body.recommend : null,
-    //   reviewer_name: body.reviewer_name.length && body.reviewer_name.length <= 60 ? body.reviewer_name : null,
-    //   reviewer_email: body.reviewer_email.length && body.reviewer_email.length <= 60 ? body.reviewer_email : null,
-    // };
-
-    // if (Object.values(newReview).indexOf(null) !== -1) {
-    //   res.status(404).send();
-    // } else {
-    //   newReview.response = null;
-    //   newReview.date = Date.now();
-    //   newReview.reported = false;
-    //   newReview.helpfulness = 0;
-    //   newReview.photos = body.photos;
-    //   newReview.characteristics = body.characteristics;
-    // }
-    const testData = {
-      product_id: 4,
-      rating: 5,
-      date: Date.now(),
-      summary: 'big summary',
-      body: 'body ',
-      recommend: true,
-      reported: false,
-      reviewer_name: 'person name',
-      reviewer_email: 'person@email.com',
-      response: null,
-      helpfulness: 0,
-      photos: ['urlplaceholder/review_5_photo_number_1.jpg'],
-      characteristics: {
-        14: 4,
-        16: 5,
-        15: 5,
-        17: 3,
-      },
+    const newReview = {
+      product_id: body.product_id,
+      rating: body.rating > 0 && body.rating <= 5 ? body.rating : null,
+      summary: body.summary || '',
+      body: body.body.length && body.body.length <= 1000 ? body.body : null,
+      recommend: typeof body.recommend === 'boolean' ? body.recommend : null,
+      reviewer_name: body.reviewer_name.length && body.reviewer_name.length <= 60 ? body.reviewer_name : null,
+      reviewer_email: body.reviewer_email.length && body.reviewer_email.length <= 60 ? body.reviewer_email : null,
     };
+
+    if (Object.values(newReview).indexOf(null) !== -1) {
+      res.status(404).send();
+    } else {
+      newReview.response = null;
+      newReview.date = Date.now();
+      newReview.reported = false;
+      newReview.helpfulness = 0;
+      newReview.photos = body.photos;
+      newReview.characteristics = body.characteristics;
+    }
     postReview((err, results) => {
       if (err) {
         res.status(404).send(err);
       } else {
         res.status(201).send();
       }
-    }, testData);
+    }, newReview);
   },
   updateReview: (req, res) => {
     updateReview((err, results) => {

@@ -3,7 +3,7 @@ const db = require('../db/db');
 
 module.exports = {
   getReviews: (callback, id) => {
-    const count = id.count || 50;
+    const count = id.count || 5;
     const offset = id.page || 0;
 
     db.query(`SELECT * FROM reviews WHERE product_id = ${id.product_id} AND reported = false LIMIT ${count} OFFSET ${offset}`, (err1, results1) => {

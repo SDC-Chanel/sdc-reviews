@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "./server/index.js",
   "scripts": {
-    "start": "node ./server/index.js",
-    "dev": "npx nodemon --watch ./server",
+    "start": "node ./server/server.js",
+    "dev": "npx nodemon --watch server server/server.js",
     "test": "jest --silent",
     "test-watch": "jest --watchAll --silent"
   },

@@ -1,8 +1,8 @@
 -- CREATE DATABASE
--- DROP TABLE IF EXISTS reviews CASCADE;
--- DROP TABLE IF EXISTS reviews_photos CASCADE;
--- DROP TABLE IF EXISTS characteristics CASCADE;
--- DROP TABLE IF EXISTS characteristic_reviews CASCADE;
+DROP TABLE IF EXISTS reviews CASCADE;
+DROP TABLE IF EXISTS reviews_photos CASCADE;
+DROP TABLE IF EXISTS characteristics CASCADE;
+DROP TABLE IF EXISTS characteristic_reviews CASCADE;
 
 -- CREATE reviews csv
 -- id,product_id,rating,date,summary,body,recommend,reported,reviewer_name,reviewer_email,response,helpfulness
