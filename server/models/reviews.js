@@ -3,7 +3,7 @@ const db = require('../db/db');
 
 module.exports = {
   getReviews: (callback, id) => {
-    const count = id.count || 5;
+    const count = id.count || 50;
     const offset = id.page || 0;
 
     db.query(`SELECT * FROM reviews WHERE product_id = ${id.product_id} AND reported = false LIMIT ${count} OFFSET ${offset}`, (err1, results1) => {
@@ -86,17 +86,15 @@ module.exports = {
       });
   },
   postReview: (callback, newReview) => {
-    db.query(`INSERT INTO reviews(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES (${newReview.product_id}, ${newReview.rating}, ${newReview.date}, '${newReview.summary.replaceAll("'", "''")}', '${newReview.body.replaceAll("'", "''")}', ${newReview.recommend}, ${newReview.reported}, '${newReview.reviewer_name.replaceAll("'", "''")}', '${newReview.reviewer_email.replaceAll("'", "''")}', '${newReview.response}', ${newReview.helpfulness})`)
+    console.log('hi momo ', newReview);
+    db.query(`INSERT INTO reviews(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES (${newReview.product_id}, ${newReview.rating}, ${newReview.date}, '${newReview.summary.replaceAll("'", "''")}', '${newReview.body.replaceAll("'", "''")}', ${newReview.recommend}, ${newReview.reported}, '${newReview.reviewer_name.replaceAll("'", "''")}', '${newReview.reviewer_email.replaceAll("'", "''")}', '${newReview.response}', ${newReview.helpfulness}) returning id`)
       .then(res1 => {
         newReview.photos.forEach(photo => {
-          db.query(`INSERT INTO reviews_photos(review_id, url) VALUES ((SELECT id FROM reviews WHERE date = ${newReview.date}), '${photo}')`)
-            .then(res0 => {
-            })
+          db.query(`INSERT INTO reviews_photos(review_id, url) VALUES (${res1.rows[0].id}, '${photo}')`)
             .then(res2 => {
               const keys = Object.keys(newReview.characteristics);
-
               keys.forEach(name => {
-                db.query(`INSERT INTO characteristic_reviews(characteristic_id, review_id, value) VALUES ((SELECT id FROM characteristics WHERE product_id = ${newReview.product_id} AND name = '${name}'), (SELECT id FROM reviews WHERE date = ${newReview.date}), ${newReview.characteristics[name].value})`);
+                db.query(`INSERT INTO characteristic_reviews(characteristic_id, review_id, value) VALUES (${name}, ${res1.rows[0].id}, ${newReview.characteristics[name]})`);
               });
             })
             .catch(err => {

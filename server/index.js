@@ -15,7 +15,7 @@ if (cluster.isPrimary) {
   // first connection distribution (accepts all connects and distrubites across workers)
   console.log(`Primary ${process.pid} is running`);
 
-  for (let i = 0; i < numCPUs; i++) {
+  for (let i = 0; i < numCPUs; i += 1) {
     cluster.fork(); // worker processes are spawned
   }
 
