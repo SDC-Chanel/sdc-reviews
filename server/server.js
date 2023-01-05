@@ -1,6 +1,5 @@
 const cluster = require('cluster');
-const { cpus } = require('node:os');
-const process = require('node:process');
+const { cpus } = require('os');
 const app = require('./index.js');
 
 const numCPUs = cpus().length;

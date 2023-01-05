@@ -14,7 +14,7 @@ app.use(morgan('dev'));
 app.use(router);
 app.use(express.urlencoded({ extended: true }));
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 app.set('port', PORT);
 
 module.exports = app;
