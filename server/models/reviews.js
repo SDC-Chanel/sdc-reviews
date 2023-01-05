@@ -86,7 +86,6 @@ module.exports = {
       });
   },
   postReview: (callback, newReview) => {
-    console.log('hi momo ', newReview);
     db.query(`INSERT INTO reviews(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES (${newReview.product_id}, ${newReview.rating}, ${newReview.date}, '${newReview.summary.replaceAll("'", "''")}', '${newReview.body.replaceAll("'", "''")}', ${newReview.recommend}, ${newReview.reported}, '${newReview.reviewer_name.replaceAll("'", "''")}', '${newReview.reviewer_email.replaceAll("'", "''")}', '${newReview.response}', ${newReview.helpfulness}) returning id`)
       .then(res1 => {
         newReview.photos.forEach(photo => {
