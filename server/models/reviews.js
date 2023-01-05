@@ -86,7 +86,7 @@ module.exports = {
       });
   },
   postReview: (callback, newReview) => {
-    db.query(`INSERT INTO reviews(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES (${newReview.product_id}, ${newReview.rating}, ${newReview.date}, '${newReview.summary.replaceAll("'", "''")}', '${newReview.body.replaceAll("'", "''")}', ${newReview.recommend}, ${newReview.reported}, '${newReview.reviewer_name.replaceAll("'", "''")}', '${newReview.reviewer_email.replaceAll("'", "''")}', '${newReview.response}', ${newReview.helpfulness}) returning id`)
+    db.query(`INSERT INTO reviews(product_id, rating, date, summary, body, recommend, reported, reviewer_name, reviewer_email, response, helpfulness) VALUES (${newReview.product_id}, ${newReview.rating}, ${newReview.date}, '${newReview.summary}', '${newReview.body}', ${newReview.recommend}, ${newReview.reported}, '${newReview.reviewer_name}', '${newReview.reviewer_email}', '${newReview.response}', ${newReview.helpfulness}) returning id`)
       .then(res1 => {
         newReview.photos.forEach(photo => {
           db.query(`INSERT INTO reviews_photos(review_id, url) VALUES (${res1.rows[0].id}, '${photo}')`)
