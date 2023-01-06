@@ -16,5 +16,7 @@ if (cluster.isPrimary) {
     cluster.fork();
   });
 } else {
+  app.get('/loaderio-72911ad25e5f00426cfbce65cafc2543', (req, res) => res.send('loaderio-72911ad25e5f00426cfbce65cafc2543'));
+
   app.listen(app.get('port'), () => { console.log(`Worker ${process.pid} listening on http://localhost:${app.get('port')}`); });
 }
