@@ -41,4 +41,10 @@ This configuration was stress tested with Loader.io and K6, resulting with the f
 - 4ms average request duration
 - 0% error rate
 
+<details>
+	
+![sdc-readme](https://user-images.githubusercontent.com/106297124/218958853-8d4fb27e-cbdc-4616-920c-64069d8e8319.png)
+	
+</details>
+
 ---
